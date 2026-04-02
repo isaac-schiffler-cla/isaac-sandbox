@@ -4,6 +4,9 @@ description: Continuously scans the codebase for complex functions with high cyc
 on:
   schedule: weekly
   workflow_dispatch:
+  push:
+    branches:
+      - main
 permissions:
   contents: read
   pull-requests: read
