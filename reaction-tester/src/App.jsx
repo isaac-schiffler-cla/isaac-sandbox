@@ -15,17 +15,27 @@ export default function App() {
 
   const handleSessionComplete = useCallback(
     (results) => {
-      const reactionTimes = results
-        .filter((r) => r.type === "green" && r.reactionTime != null)
-        .map((r) => r.reactionTime);
+      // Single pass over results to collect all per-session stats
+      let greenCount = 0, redCount = 0, yellowCount = 0, falsePositives = 0;
+      const reactionTimes = [];
+      for (const r of results) {
+        if (r.type === "green") {
+          greenCount++;
+          if (r.reactionTime != null) reactionTimes.push(r.reactionTime);
+        } else {
+          redCount++;
+        }
+        if (r.hadYellow) yellowCount++;
+        if (r.falsePositive) falsePositives++;
+      }
 
       const session = {
         date: new Date().toISOString(),
         rounds: results.length,
-        greenCount: results.filter((r) => r.type === "green").length,
-        redCount: results.filter((r) => r.type === "red").length,
-        yellowCount: results.filter((r) => r.hadYellow).length,
-        falsePositives: results.filter((r) => r.falsePositive).length,
+        greenCount,
+        redCount,
+        yellowCount,
+        falsePositives,
         reactionTimes,
         avgReaction:
           reactionTimes.length > 0

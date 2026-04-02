@@ -14,6 +14,13 @@ const MAX_REACTION_MS = 2000; // auto-advance after 2 s
     countdown → waiting → yellow? → color → result → (next round or session end)
 */
 
+function getBoxClass(phase, color) {
+  if (phase === "yellow") return "game-box box-yellow";
+  if (phase === "color" && color === "green") return "game-box box-green";
+  if (phase === "color" && color === "red") return "game-box box-red";
+  return "game-box box-idle";
+}
+
 export default function Game({ onSessionComplete }) {
   const [round, setRound] = useState(0); // 0-indexed current round
   const [phase, setPhase] = useState("countdown"); // countdown | waiting | yellow | color | result
@@ -87,31 +94,16 @@ export default function Game({ onSessionComplete }) {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const showFinalColor = (yellowShown) => {
-    const isGreen = Math.random() < GREEN_CHANCE;
-    const c = isGreen ? "green" : "red";
+    const c = Math.random() < GREEN_CHANCE ? "green" : "red";
     setColor(c);
     setPhase("color");
     startTimeRef.current = performance.now();
 
     // Auto-advance if user doesn't click within MAX_REACTION_MS
     timeoutRef.current = setTimeout(() => {
-      if (c === "green") {
-        recordResult({
-          type: "green",
-          reactionTime: null,
-          falsePositive: false,
-          hadYellow: yellowShown,
-        });
-        setResultText("Too slow! (>2 s)");
-      } else {
-        recordResult({
-          type: "red",
-          reactionTime: null,
-          falsePositive: false,
-          hadYellow: yellowShown,
-        });
-        setResultText("Nice — you resisted the red!");
-      }
+      const isGreen = c === "green";
+      recordResult({ type: c, reactionTime: null, falsePositive: false, hadYellow: yellowShown });
+      setResultText(isGreen ? "Too slow! (>2 s)" : "Nice — you resisted the red!");
       setPhase("result");
       timeoutRef.current = setTimeout(advanceRound, 1500);
     }, MAX_REACTION_MS);
@@ -177,16 +169,7 @@ export default function Game({ onSessionComplete }) {
 
   /* ---------- render ---------- */
 
-  const boxClass = [
-    "game-box",
-    phase === "yellow" && "box-yellow",
-    phase === "color" && color === "green" && "box-green",
-    phase === "color" && color === "red" && "box-red",
-    (phase === "countdown" || phase === "waiting") && "box-idle",
-    phase === "result" && "box-idle",
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const boxClass = getBoxClass(phase, color);
 
   return (
     <div className="game-container">
