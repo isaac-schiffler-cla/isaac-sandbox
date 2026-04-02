@@ -254,9 +254,50 @@
   border-radius: 12px;
   padding: 1.25rem 1.5rem;
 }
+.stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
 .stats-panel h2 {
   font-size: 1.15rem;
+}
+.stats-summary {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+.stats-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
   margin-bottom: 1rem;
+}
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.filter-label {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.filter-control {
+  width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+  font: inherit;
+}
+.filter-control:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 .no-stats {
   color: var(--text-muted);
@@ -292,6 +333,7 @@
 
 /* ===== Responsive ===== */
 @media (max-width: 480px) {
+  .stats-filters { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .game-box { aspect-ratio: 3 / 2; }
   .countdown-number { font-size: 4.5rem; }

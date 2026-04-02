@@ -15,8 +15,13 @@ export default function App() {
 
   const handleSessionComplete = useCallback(
     (results) => {
+      const recordedAt = new Date();
+
       // Single pass over results to collect all per-session stats
-      let greenCount = 0, redCount = 0, yellowCount = 0, falsePositives = 0;
+      let greenCount = 0,
+        redCount = 0,
+        yellowCount = 0,
+        falsePositives = 0;
       const reactionTimes = [];
       for (const r of results) {
         if (r.type === "green") {
@@ -30,7 +35,13 @@ export default function App() {
       }
 
       const session = {
-        date: new Date().toISOString(),
+        date: recordedAt.toISOString(),
+        localTime: {
+          hour: recordedAt.getHours(),
+          day: recordedAt.getDay(),
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          timezoneOffsetMinutes: recordedAt.getTimezoneOffset(),
+        },
         rounds: results.length,
         greenCount,
         redCount,
