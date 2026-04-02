@@ -133,6 +133,8 @@ export default function Stats({ stats }) {
       : 0;
   const best = allReactions.length > 0 ? Math.min(...allReactions) : 0;
   const worst = allReactions.length > 0 ? Math.max(...allReactions) : 0;
+  const falsePositiveRate =
+    totalRed > 0 ? Math.round((totalFalsePositives / totalRed) * 100) : 0;
 
   const filtersSummary = [
     sessionLimit === "all" ? "all sessions" : `last ${sessionLimit} sessions`,
@@ -239,8 +241,8 @@ export default function Stats({ stats }) {
                 </span>
               </div>
               <div className="stat-card warn">
-                <span className="stat-value">{totalFalsePositives}</span>
-                <span className="stat-label">False Positives</span>
+                <span className="stat-value">{falsePositiveRate}%</span>
+                <span className="stat-label">False Positive Rate</span>
               </div>
               <div className="stat-card accent">
                 <span className="stat-value">{avg} ms</span>

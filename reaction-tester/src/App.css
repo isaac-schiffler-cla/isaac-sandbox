@@ -151,7 +151,6 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.15s, box-shadow 0.15s;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
@@ -163,21 +162,14 @@
 .box-green {
   background: var(--green);
   box-shadow: 0 0 60px var(--green-glow), inset 0 0 30px rgba(255,255,255,0.1);
-  animation: boxAppear 0.15s ease-out;
 }
 .box-red {
   background: var(--red);
   box-shadow: 0 0 60px var(--red-glow), inset 0 0 30px rgba(255,255,255,0.1);
-  animation: boxAppear 0.15s ease-out;
 }
 .box-yellow {
   background: var(--yellow);
   box-shadow: 0 0 60px var(--yellow-glow), inset 0 0 30px rgba(255,255,255,0.1);
-  animation: boxAppear 0.15s ease-out;
-}
-@keyframes boxAppear {
-  from { transform: scale(0.92); opacity: 0.6; }
-  to   { transform: scale(1);    opacity: 1; }
 }
 
 .box-label {
