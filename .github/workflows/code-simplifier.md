@@ -4,9 +4,9 @@ description: Continuously scans the codebase for complex functions with high cyc
 on:
   schedule: weekly
   workflow_dispatch:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
 permissions:
   contents: read
   pull-requests: read
@@ -63,6 +63,7 @@ Read the flagged files carefully to understand the code.
 ### Step 3: Select the top candidates
 
 Choose up to **5 functions** that would benefit most from refactoring. For each, document:
+
 - File path and function/method name
 - The specific problem (cyclomatic complexity, deep nesting, long method, etc.)
 - A brief explanation of how it can be simplified
@@ -78,6 +79,7 @@ For each selected function, apply one or more of these simplification strategies
 - **Reduce cyclomatic complexity**: Flatten nested loops/conditionals
 
 Use the `edit` tool to apply the refactored code to the actual files. Make sure:
+
 - The refactored code is functionally equivalent to the original
 - Variable and function names are clear and descriptive
 - Comments explain non-obvious logic
@@ -89,6 +91,7 @@ After applying all refactors, create a draft pull request with:
 - **Title**: A concise summary, e.g. `Simplify complex functions in [module/file]`
 - **Branch name**: `refactor/code-simplifier`
 - **Body**: Include a summary structured as follows:
+
   ```
   ## Summary
 
