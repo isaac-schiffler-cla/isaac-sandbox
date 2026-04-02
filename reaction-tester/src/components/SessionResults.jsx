@@ -1,3 +1,10 @@
+function formatRoundResult(r) {
+  if (r.falsePositive) return "❌ False positive";
+  if (r.type === "green" && r.reactionTime != null) return `${r.reactionTime} ms`;
+  if (r.type === "red") return "✓ Avoided";
+  return "Too slow (>2s)";
+}
+
 export default function SessionResults({ results, onPlayAgain }) {
   const greens = results.filter((r) => r.type === "green");
   const falsePositives = results.filter((r) => r.falsePositive);
@@ -51,15 +58,7 @@ export default function SessionResults({ results, onPlayAgain }) {
                 {r.type}
               </td>
               <td>{r.hadYellow ? "🟡 Yes" : "—"}</td>
-              <td>
-                {r.falsePositive
-                  ? "❌ False positive"
-                  : r.type === "green" && r.reactionTime != null
-                    ? `${r.reactionTime} ms`
-                    : r.type === "red"
-                      ? "✓ Avoided"
-                      : "Too slow (>2s)"}
-              </td>
+              <td>{formatRoundResult(r)}</td>
             </tr>
           ))}
         </tbody>

@@ -8,18 +8,18 @@ export default function Stats({ stats }) {
     );
   }
 
-  const allReactions = stats.sessions.flatMap((s) => s.reactionTimes);
-  const totalGreen = stats.sessions.reduce((a, s) => a + s.greenCount, 0);
-  const totalRed = stats.sessions.reduce((a, s) => a + s.redCount, 0);
-  const totalFalsePositives = stats.sessions.reduce(
-    (a, s) => a + s.falsePositives,
-    0,
-  );
-  const totalYellowFake = stats.sessions.reduce(
-    (a, s) => a + (s.yellowCount || 0),
-    0,
-  );
-  const totalRounds = stats.sessions.reduce((a, s) => a + s.rounds, 0);
+  const { allReactions, totalGreen, totalRed, totalFalsePositives, totalYellowFake, totalRounds } =
+    stats.sessions.reduce(
+      (acc, s) => ({
+        allReactions: acc.allReactions.concat(s.reactionTimes),
+        totalGreen: acc.totalGreen + s.greenCount,
+        totalRed: acc.totalRed + s.redCount,
+        totalFalsePositives: acc.totalFalsePositives + s.falsePositives,
+        totalYellowFake: acc.totalYellowFake + (s.yellowCount || 0),
+        totalRounds: acc.totalRounds + s.rounds,
+      }),
+      { allReactions: [], totalGreen: 0, totalRed: 0, totalFalsePositives: 0, totalYellowFake: 0, totalRounds: 0 },
+    );
 
   const avg =
     allReactions.length > 0
