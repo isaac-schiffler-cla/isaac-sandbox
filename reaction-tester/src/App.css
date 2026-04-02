@@ -1,0 +1,298 @@
+/* ===== Layout ===== */
+.app {
+  max-width: 640px;
+  width: 100%;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.app-header h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.tagline {
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+/* ===== Home / Rules ===== */
+.home-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+.rules {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  width: 100%;
+}
+.rules h3 {
+  margin-bottom: 0.6rem;
+  font-size: 1.05rem;
+}
+.rules ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.rules li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+.rules li strong {
+  color: var(--text);
+}
+
+/* ===== Dots ===== */
+.dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot-green { background: var(--green); }
+.dot-red   { background: var(--red); }
+.dot-yellow { background: var(--yellow); }
+
+/* ===== Buttons ===== */
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 2.25rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+.btn-primary:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 30px var(--accent-glow);
+}
+.btn-primary:active { transform: scale(0.97); }
+
+.btn-start { font-size: 1.3rem; padding: 0.9rem 3rem; }
+
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: 8px;
+  padding: 0.45rem 1.25rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-danger:hover { background: rgba(248, 113, 113, 0.1); }
+
+/* ===== Game container ===== */
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+.round-indicator {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ===== Countdown ===== */
+.countdown {
+  text-align: center;
+  padding: 3rem 0;
+}
+.countdown-number {
+  font-size: 6rem;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
+  animation: pulse 0.9s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.12); opacity: 0.7; }
+}
+.countdown p {
+  color: var(--text-muted);
+  margin-top: 0.75rem;
+  font-size: 1.1rem;
+}
+.hint {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* ===== Game Box ===== */
+.game-box {
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 4 / 3;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.box-idle {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  cursor: default;
+}
+.box-green {
+  background: var(--green);
+  box-shadow: 0 0 60px var(--green-glow), inset 0 0 30px rgba(255,255,255,0.1);
+  animation: boxAppear 0.15s ease-out;
+}
+.box-red {
+  background: var(--red);
+  box-shadow: 0 0 60px var(--red-glow), inset 0 0 30px rgba(255,255,255,0.1);
+  animation: boxAppear 0.15s ease-out;
+}
+.box-yellow {
+  background: var(--yellow);
+  box-shadow: 0 0 60px var(--yellow-glow), inset 0 0 30px rgba(255,255,255,0.1);
+  animation: boxAppear 0.15s ease-out;
+}
+@keyframes boxAppear {
+  from { transform: scale(0.92); opacity: 0.6; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.box-label {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  pointer-events: none;
+}
+.result-label {
+  font-size: 1.3rem;
+  color: var(--text);
+  text-shadow: none;
+}
+
+/* ===== Session Results ===== */
+.session-results {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+.session-results h2 {
+  font-size: 1.6rem;
+}
+.big-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.big-number {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: var(--green);
+}
+.big-label {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.results-table th {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.results-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.row-good td { color: var(--green); }
+.row-bad  td { color: var(--red); }
+.row-neutral td { color: var(--text-muted); }
+
+.fp-summary {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* ===== Stats Panel ===== */
+.stats-panel {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+}
+.stats-panel h2 {
+  font-size: 1.15rem;
+  margin-bottom: 1rem;
+}
+.no-stats {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+.stat-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.stat-card.warn .stat-value { color: var(--red); }
+.stat-card.accent .stat-value { color: var(--accent); }
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .game-box { aspect-ratio: 3 / 2; }
+  .countdown-number { font-size: 4.5rem; }
+}
