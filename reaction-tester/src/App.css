@@ -620,6 +620,14 @@
 
 /* ===== Responsive ===== */
 @media (max-width: 960px) {
+  .app {
+    padding: 1.5rem 1rem 2.5rem;
+  }
+
+  .app-header {
+    margin-bottom: 1.5rem;
+  }
+
   .advanced-overview-grid,
   .time-of-day-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -629,26 +637,279 @@
   .advanced-insights-grid {
     grid-template-columns: 1fr;
   }
+
+  .stats-panel,
+  .chart-card {
+    padding: 1rem;
+  }
+
+  .table-scroll {
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+  }
 }
 
-@media (max-width: 480px) {
-  .stats-filters { grid-template-columns: 1fr; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .game-box { aspect-ratio: 3 / 2; }
-  .countdown-number { font-size: 4.5rem; }
-  .advanced-overview-grid,
-  .time-of-day-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 720px) {
+  .app {
+    padding: 1.25rem 0.9rem 2rem;
   }
-  .wide-card {
-    grid-column: span 1;
+
+  .app-header {
+    margin-bottom: 1.25rem;
   }
-  .distribution-row {
-    grid-template-columns: 64px minmax(0, 1fr) 28px;
+
+  .app-header h1 {
+    font-size: 1.95rem;
   }
+
+  .home-screen,
+  .advanced-stats-page {
+    gap: 1rem;
+  }
+
+  .rules,
+  .stats-panel,
+  .chart-card {
+    border-radius: 14px;
+    padding: 1rem;
+  }
+
+  .rules ul,
+  .game-container,
+  .session-results {
+    gap: 0.85rem;
+  }
+
+  .rules li {
+    align-items: flex-start;
+    line-height: 1.45;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger {
+    width: 100%;
+    max-width: none;
+  }
+
+  .btn-start {
+    padding: 0.9rem 1.25rem;
+  }
+
+  .countdown {
+    padding: 2.25rem 0 1.5rem;
+  }
+
+  .box-label {
+    font-size: 1.55rem;
+    text-align: center;
+    padding-inline: 1rem;
+  }
+
+  .result-label {
+    font-size: 1.15rem;
+  }
+
+  .stats-header,
   .chart-header,
   .section-heading,
   .advanced-page-header {
     flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .stats-filters,
+  .advanced-insights-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid,
+  .advanced-overview-grid,
+  .time-of-day-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .wide-card {
+    grid-column: span 1;
+  }
+
+  .stat-card,
+  .time-card {
+    padding: 0.75rem 0.7rem;
+    min-height: 0;
+    gap: 0.15rem;
+  }
+
+  .stat-value {
+    font-size: 1.3rem;
+    line-height: 1.1;
+  }
+
+  .stat-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.35px;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .time-card {
+    gap: 0.45rem;
+  }
+
+  .time-card-header h4,
+  .time-card-metric strong {
+    font-size: 0.9rem;
+  }
+
+  .time-card-header span,
+  .time-card-metric span {
+    font-size: 0.76rem;
+  }
+
+  .chart-footer {
+    font-size: 0.75rem;
+  }
+
+  .distribution-row {
+    grid-template-columns: 68px minmax(0, 1fr) 32px;
+    gap: 0.5rem;
+  }
+
+  .table-scroll {
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .advanced-stats-table th,
+  .advanced-stats-table td,
+  .results-table th,
+  .results-table td {
+    padding: 0.65rem 0.55rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .app {
+    padding: max(1rem, env(safe-area-inset-top)) 0.75rem calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .home-screen {
+    gap: 0.8rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .btn-secondary,
+  .btn-danger {
+    margin-top: 0.5rem;
+  }
+
+  .app-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .tagline,
+  .stats-summary,
+  .fp-summary,
+  .hint,
+  .no-stats {
+    line-height: 1.45;
+  }
+
+  .rules,
+  .stats-panel,
+  .chart-card {
+    padding: 0.8rem;
+  }
+
+  .rules li {
+    font-size: 0.92rem;
+  }
+
+  .game-box {
+    aspect-ratio: 6 / 5;
+    border-radius: 14px;
+  }
+
+  .countdown {
+    padding: 1.75rem 0 1rem;
+  }
+
+  .countdown-number {
+    font-size: 4rem;
+  }
+
+  .big-number {
+    font-size: 3rem;
+  }
+
+  .stats-grid,
+  .advanced-overview-grid,
+  .time-of-day-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem;
+  }
+
+  .stat-value {
+    font-size: 1.15rem;
+  }
+
+  .stat-label {
+    font-size: 0.64rem;
+    letter-spacing: 0.25px;
+  }
+
+  .stat-card,
+  .time-card {
+    border-radius: 10px;
+    padding: 0.65rem 0.55rem;
+  }
+
+  .time-card {
+    gap: 0.4rem;
+  }
+
+  .time-card-header h4,
+  .time-card-metric strong {
+    font-size: 0.82rem;
+  }
+
+  .distribution-row {
+    grid-template-columns: 64px minmax(0, 1fr) 28px;
+  }
+
+  .distribution-label,
+  .distribution-value,
+  .time-card-header span,
+  .time-card-metric span,
+  .advanced-stats-table,
+  .results-table {
+    font-size: 0.82rem;
+  }
+
+  .chart-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .advanced-stats-table th,
+  .advanced-stats-table td,
+  .results-table th,
+  .results-table td {
+    padding: 0.55rem 0.45rem;
+  }
+
+  .table-scroll {
+    margin-inline: -0.9rem;
+    padding-inline: 0.9rem;
   }
 }
