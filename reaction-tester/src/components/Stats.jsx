@@ -64,8 +64,9 @@ export default function Stats({ stats }) {
   const [sessionLimit, setSessionLimit] = useState("all");
   const [weeksBack, setWeeksBack] = useState("");
   const [timeOfDay, setTimeOfDay] = useState("all");
+  const [referenceNow] = useState(() => Date.now());
 
-  const sessions = stats?.sessions ?? [];
+  const sessions = useMemo(() => stats?.sessions ?? [], [stats]);
 
   const normalizedWeeksBack = Number.parseInt(weeksBack, 10);
   const hasWeekFilter =
@@ -82,7 +83,7 @@ export default function Stats({ stats }) {
         : sortedSessions.slice(0, Number.parseInt(sessionLimit, 10));
 
     const cutoff = hasWeekFilter
-      ? Date.now() - normalizedWeeksBack * 7 * 24 * 60 * 60 * 1000
+      ? referenceNow - normalizedWeeksBack * 7 * 24 * 60 * 60 * 1000
       : null;
 
     return limitedSessions.filter((session) => {
@@ -97,7 +98,14 @@ export default function Stats({ stats }) {
 
       return isSessionWithinTimeOfDay(session, timeOfDay);
     });
-  }, [hasWeekFilter, normalizedWeeksBack, sessionLimit, sessions, timeOfDay]);
+  }, [
+    hasWeekFilter,
+    normalizedWeeksBack,
+    referenceNow,
+    sessionLimit,
+    sessions,
+    timeOfDay,
+  ]);
 
   const {
     allReactions,

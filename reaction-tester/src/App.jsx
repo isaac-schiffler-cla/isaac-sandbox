@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import Game from "./components/Game";
+import AdvancedStatsPage from "./components/AdvancedStatsPage";
 import Stats from "./components/Stats";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import "./App.css";
@@ -12,6 +13,7 @@ export default function App() {
     EMPTY_STATS,
   );
   const [playing, setPlaying] = useState(false);
+  const [view, setView] = useState("home");
 
   const handleSessionComplete = useCallback(
     (results) => {
@@ -73,13 +75,17 @@ export default function App() {
   };
 
   return (
-    <div className="app">
+    <div className={`app ${view === "advanced" ? "app-wide" : ""}`.trim()}>
       <header className="app-header">
         <h1>⚡ Reaction Tester</h1>
         <p className="tagline">How fast are your reflexes?</p>
       </header>
 
-      {!playing ? (
+      {playing ? (
+        <Game onSessionComplete={handleSessionComplete} />
+      ) : view === "advanced" ? (
+        <AdvancedStatsPage stats={stats} onBack={() => setView("home")} />
+      ) : (
         <div className="home-screen">
           <div className="rules">
             <h3>How it works</h3>
@@ -114,13 +120,20 @@ export default function App() {
           <Stats stats={stats} />
 
           {stats.sessions.length > 0 && (
+            <button
+              className="btn-secondary"
+              onClick={() => setView("advanced")}
+            >
+              Open Detailed Stats
+            </button>
+          )}
+
+          {stats.sessions.length > 0 && (
             <button className="btn-danger" onClick={clearStats}>
               Clear Stats
             </button>
           )}
         </div>
-      ) : (
-        <Game onSessionComplete={handleSessionComplete} />
       )}
     </div>
   );

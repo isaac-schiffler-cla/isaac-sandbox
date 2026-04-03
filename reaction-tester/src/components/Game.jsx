@@ -25,7 +25,6 @@ export default function Game({ onSessionComplete }) {
   const [round, setRound] = useState(0); // 0-indexed current round
   const [phase, setPhase] = useState("countdown"); // countdown | waiting | yellow | color | result
   const [color, setColor] = useState(null); // 'green' | 'red'
-  const [hadYellow, setHadYellow] = useState(false);
   const [resultText, setResultText] = useState("");
   const [results, setResults] = useState([]);
   const [sessionDone, setSessionDone] = useState(false);
@@ -67,18 +66,39 @@ export default function Game({ onSessionComplete }) {
     setRound((r) => r + 1);
     setPhase("countdown");
     setColor(null);
-    setHadYellow(false);
     hadYellowRef.current = false;
     setResultText("");
   }, [round]);
 
+  function showFinalColor(yellowShown) {
+    const c = Math.random() < GREEN_CHANCE ? "green" : "red";
+    setColor(c);
+    setPhase("color");
+    startTimeRef.current = performance.now();
+
+    // Auto-advance if user doesn't click within MAX_REACTION_MS
+    timeoutRef.current = setTimeout(() => {
+      const isGreen = c === "green";
+      recordResult({
+        type: c,
+        reactionTime: null,
+        falsePositive: false,
+        hadYellow: yellowShown,
+      });
+      setResultText(
+        isGreen ? "Too slow! (>2 s)" : "Nice — you resisted the red!",
+      );
+      setPhase("result");
+      timeoutRef.current = setTimeout(advanceRound, 1500);
+    }, MAX_REACTION_MS);
+  }
+
   /* ---------- countdown finished → pick path ---------- */
 
-  const onCountdownComplete = useCallback(() => {
+  function onCountdownComplete() {
     const willYellow = Math.random() < YELLOW_CHANCE;
     if (willYellow) {
       hadYellowRef.current = true;
-      setHadYellow(true);
       setPhase("yellow");
       const delay =
         YELLOW_DELAY_MIN +
@@ -88,26 +108,9 @@ export default function Game({ onSessionComplete }) {
       }, delay);
     } else {
       hadYellowRef.current = false;
-      setHadYellow(false);
       showFinalColor(false);
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const showFinalColor = (yellowShown) => {
-    const c = Math.random() < GREEN_CHANCE ? "green" : "red";
-    setColor(c);
-    setPhase("color");
-    startTimeRef.current = performance.now();
-
-    // Auto-advance if user doesn't click within MAX_REACTION_MS
-    timeoutRef.current = setTimeout(() => {
-      const isGreen = c === "green";
-      recordResult({ type: c, reactionTime: null, falsePositive: false, hadYellow: yellowShown });
-      setResultText(isGreen ? "Too slow! (>2 s)" : "Nice — you resisted the red!");
-      setPhase("result");
-      timeoutRef.current = setTimeout(advanceRound, 1500);
-    }, MAX_REACTION_MS);
-  };
+  }
 
   /* ---------- click on the color box ---------- */
 
