@@ -1,64 +1,9 @@
 import { useMemo, useState } from "react";
-
-const SESSION_LIMIT_OPTIONS = [
-  { value: "all", label: "All sessions" },
-  { value: "10", label: "Last 10" },
-  { value: "20", label: "Last 20" },
-  { value: "50", label: "Last 50" },
-];
-
-const TIME_OF_DAY_OPTIONS = [
-  { value: "all", label: "Any time" },
-  { value: "overnight", label: "Overnight (12am–6am)" },
-  { value: "morning", label: "Morning (6am–12pm)" },
-  { value: "afternoon", label: "Afternoon (12pm–6pm)" },
-  { value: "evening", label: "Evening (6pm–12am)" },
-];
-
-function isWithinTimeOfDay(hour, filter) {
-  switch (filter) {
-    case "overnight":
-      return hour >= 0 && hour < 6;
-    case "morning":
-      return hour >= 6 && hour < 12;
-    case "afternoon":
-      return hour >= 12 && hour < 18;
-    case "evening":
-      return hour >= 18 && hour < 24;
-    default:
-      return true;
-  }
-}
-
-function getRecordedSessionHour(session) {
-  if (
-    typeof session?.localTime?.hour === "number" &&
-    session.localTime.hour >= 0 &&
-    session.localTime.hour < 24
-  ) {
-    return session.localTime.hour;
-  }
-
-  const fallbackDate = new Date(session.date);
-  if (Number.isNaN(fallbackDate.getTime())) {
-    return null;
-  }
-
-  return fallbackDate.getHours();
-}
-
-function isSessionWithinTimeOfDay(session, filter) {
-  if (filter === "all") {
-    return true;
-  }
-
-  const recordedHour = getRecordedSessionHour(session);
-  if (recordedHour == null) {
-    return false;
-  }
-
-  return isWithinTimeOfDay(recordedHour, filter);
-}
+import {
+  SESSION_LIMIT_OPTIONS,
+  TIME_OF_DAY_OPTIONS,
+  filterSessions,
+} from "../utils/sessionFilters";
 
 export default function Stats({ stats }) {
   const [sessionLimit, setSessionLimit] = useState("all");
@@ -72,40 +17,17 @@ export default function Stats({ stats }) {
   const hasWeekFilter =
     Number.isFinite(normalizedWeeksBack) && normalizedWeeksBack > 0;
 
-  const filteredSessions = useMemo(() => {
-    const sortedSessions = [...sessions].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-    );
-
-    const limitedSessions =
-      sessionLimit === "all"
-        ? sortedSessions
-        : sortedSessions.slice(0, Number.parseInt(sessionLimit, 10));
-
-    const cutoff = hasWeekFilter
-      ? referenceNow - normalizedWeeksBack * 7 * 24 * 60 * 60 * 1000
-      : null;
-
-    return limitedSessions.filter((session) => {
-      const sessionDate = new Date(session.date);
-      if (Number.isNaN(sessionDate.getTime())) {
-        return false;
-      }
-
-      if (cutoff !== null && sessionDate.getTime() < cutoff) {
-        return false;
-      }
-
-      return isSessionWithinTimeOfDay(session, timeOfDay);
-    });
-  }, [
-    hasWeekFilter,
-    normalizedWeeksBack,
-    referenceNow,
-    sessionLimit,
-    sessions,
-    timeOfDay,
-  ]);
+  const { filteredSessions } = useMemo(
+    () =>
+      filterSessions(sessions, {
+        sessionLimit,
+        normalizedWeeksBack,
+        hasWeekFilter,
+        referenceNow,
+        timeOfDay,
+      }),
+    [hasWeekFilter, normalizedWeeksBack, referenceNow, sessionLimit, sessions, timeOfDay],
+  );
 
   const {
     allReactions,

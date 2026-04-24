@@ -7,6 +7,43 @@ import "./App.css";
 
 const EMPTY_STATS = { sessions: [] };
 
+function buildSessionRecord(results) {
+  const recordedAt = new Date();
+  let greenCount = 0, redCount = 0, yellowCount = 0, falsePositives = 0;
+  const reactionTimes = [];
+
+  for (const r of results) {
+    if (r.type === "green") {
+      greenCount++;
+      if (r.reactionTime != null) reactionTimes.push(r.reactionTime);
+    } else {
+      redCount++;
+    }
+    if (r.hadYellow) yellowCount++;
+    if (r.falsePositive) falsePositives++;
+  }
+
+  return {
+    date: recordedAt.toISOString(),
+    localTime: {
+      hour: recordedAt.getHours(),
+      day: recordedAt.getDay(),
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      timezoneOffsetMinutes: recordedAt.getTimezoneOffset(),
+    },
+    rounds: results.length,
+    greenCount,
+    redCount,
+    yellowCount,
+    falsePositives,
+    reactionTimes,
+    avgReaction:
+      reactionTimes.length > 0
+        ? Math.round(reactionTimes.reduce((a, b) => a + b, 0) / reactionTimes.length)
+        : null,
+  };
+}
+
 export default function App() {
   const [stats, setStats] = useLocalStorage(
     "reaction-tester-stats",
@@ -17,52 +54,8 @@ export default function App() {
 
   const handleSessionComplete = useCallback(
     (results) => {
-      const recordedAt = new Date();
-
-      // Single pass over results to collect all per-session stats
-      let greenCount = 0,
-        redCount = 0,
-        yellowCount = 0,
-        falsePositives = 0;
-      const reactionTimes = [];
-      for (const r of results) {
-        if (r.type === "green") {
-          greenCount++;
-          if (r.reactionTime != null) reactionTimes.push(r.reactionTime);
-        } else {
-          redCount++;
-        }
-        if (r.hadYellow) yellowCount++;
-        if (r.falsePositive) falsePositives++;
-      }
-
-      const session = {
-        date: recordedAt.toISOString(),
-        localTime: {
-          hour: recordedAt.getHours(),
-          day: recordedAt.getDay(),
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          timezoneOffsetMinutes: recordedAt.getTimezoneOffset(),
-        },
-        rounds: results.length,
-        greenCount,
-        redCount,
-        yellowCount,
-        falsePositives,
-        reactionTimes,
-        avgReaction:
-          reactionTimes.length > 0
-            ? Math.round(
-                reactionTimes.reduce((a, b) => a + b, 0) / reactionTimes.length,
-              )
-            : null,
-      };
-
-      setStats((prev) => ({
-        ...prev,
-        sessions: [...prev.sessions, session],
-      }));
-
+      const session = buildSessionRecord(results);
+      setStats((prev) => ({ ...prev, sessions: [...prev.sessions, session] }));
       setPlaying(false);
     },
     [setStats],

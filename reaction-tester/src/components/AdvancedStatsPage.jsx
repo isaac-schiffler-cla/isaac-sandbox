@@ -1,19 +1,11 @@
 import { useMemo, useState } from "react";
-
-const SESSION_LIMIT_OPTIONS = [
-  { value: "all", label: "All sessions" },
-  { value: "10", label: "Last 10" },
-  { value: "20", label: "Last 20" },
-  { value: "50", label: "Last 50" },
-];
-
-const TIME_OF_DAY_OPTIONS = [
-  { value: "all", label: "Any time" },
-  { value: "overnight", label: "Overnight (12am–6am)" },
-  { value: "morning", label: "Morning (6am–12pm)" },
-  { value: "afternoon", label: "Afternoon (12pm–6pm)" },
-  { value: "evening", label: "Evening (6pm–12am)" },
-];
+import {
+  SESSION_LIMIT_OPTIONS,
+  TIME_OF_DAY_OPTIONS,
+  isWithinTimeOfDay,
+  getRecordedSessionHour,
+  filterSessions,
+} from "../utils/sessionFilters";
 
 const TIME_SEGMENTS = [
   { key: "overnight", label: "Overnight", range: "12am–6am" },
@@ -30,38 +22,6 @@ const DISTRIBUTION_BUCKETS = [
   { key: "400s", label: "400–499", min: 400, max: 499 },
   { key: "500p", label: "500+", min: 500, max: Infinity },
 ];
-
-function isWithinTimeOfDay(hour, filter) {
-  switch (filter) {
-    case "overnight":
-      return hour >= 0 && hour < 6;
-    case "morning":
-      return hour >= 6 && hour < 12;
-    case "afternoon":
-      return hour >= 12 && hour < 18;
-    case "evening":
-      return hour >= 18 && hour < 24;
-    default:
-      return true;
-  }
-}
-
-function getRecordedSessionHour(session) {
-  if (
-    typeof session?.localTime?.hour === "number" &&
-    session.localTime.hour >= 0 &&
-    session.localTime.hour < 24
-  ) {
-    return session.localTime.hour;
-  }
-
-  const fallbackDate = new Date(session.date);
-  if (Number.isNaN(fallbackDate.getTime())) {
-    return null;
-  }
-
-  return fallbackDate.getHours();
-}
 
 function sortNumbers(values) {
   return [...values].sort((a, b) => a - b);
@@ -354,48 +314,17 @@ export default function AdvancedStatsPage({ stats, onBack }) {
   const hasWeekFilter =
     Number.isFinite(normalizedWeeksBack) && normalizedWeeksBack > 0;
 
-  const { baseSessions, filteredSessions } = useMemo(() => {
-    const sortedSessions = [...sessions].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-    );
-
-    const limitedSessions =
-      sessionLimit === "all"
-        ? sortedSessions
-        : sortedSessions.slice(0, Number.parseInt(sessionLimit, 10));
-
-    const cutoff = hasWeekFilter
-      ? referenceNow - normalizedWeeksBack * 7 * 24 * 60 * 60 * 1000
-      : null;
-
-    const rangeFiltered = limitedSessions.filter((session) => {
-      const sessionDate = new Date(session.date);
-      if (Number.isNaN(sessionDate.getTime())) {
-        return false;
-      }
-
-      return cutoff === null || sessionDate.getTime() >= cutoff;
-    });
-
-    return {
-      baseSessions: rangeFiltered,
-      filteredSessions: rangeFiltered.filter((session) => {
-        if (timeOfDay === "all") {
-          return true;
-        }
-
-        const hour = getRecordedSessionHour(session);
-        return hour != null && isWithinTimeOfDay(hour, timeOfDay);
+  const { baseSessions, filteredSessions } = useMemo(
+    () =>
+      filterSessions(sessions, {
+        sessionLimit,
+        normalizedWeeksBack,
+        hasWeekFilter,
+        referenceNow,
+        timeOfDay,
       }),
-    };
-  }, [
-    hasWeekFilter,
-    normalizedWeeksBack,
-    referenceNow,
-    sessionLimit,
-    sessions,
-    timeOfDay,
-  ]);
+    [hasWeekFilter, normalizedWeeksBack, referenceNow, sessionLimit, sessions, timeOfDay],
+  );
 
   const sessionMetrics = useMemo(
     () => filteredSessions.map((session) => getSessionMetrics(session)),
@@ -408,35 +337,26 @@ export default function AdvancedStatsPage({ stats, onBack }) {
   );
 
   const overall = useMemo(() => {
-    const totalRounds = filteredSessions.reduce(
-      (sum, session) => sum + (session.rounds || 0),
-      0,
-    );
-    const totalGreen = filteredSessions.reduce(
-      (sum, session) => sum + (session.greenCount || 0),
-      0,
-    );
-    const totalRed = filteredSessions.reduce(
-      (sum, session) => sum + (session.redCount || 0),
-      0,
-    );
-    const totalYellow = filteredSessions.reduce(
-      (sum, session) => sum + (session.yellowCount || 0),
-      0,
-    );
-    const totalFalsePositives = filteredSessions.reduce(
-      (sum, session) => sum + (session.falsePositives || 0),
-      0,
+    // Single-pass aggregation over filteredSessions
+    const totals = filteredSessions.reduce(
+      (acc, session) => ({
+        rounds: acc.rounds + (session.rounds || 0),
+        green: acc.green + (session.greenCount || 0),
+        red: acc.red + (session.redCount || 0),
+        yellow: acc.yellow + (session.yellowCount || 0),
+        falsePositives: acc.falsePositives + (session.falsePositives || 0),
+      }),
+      { rounds: 0, green: 0, red: 0, yellow: 0, falsePositives: 0 },
     );
 
     const iqrSummary = getIqrSummary(allReactions);
 
     return {
-      totalRounds,
-      totalGreen,
-      totalRed,
-      totalYellow,
-      totalFalsePositives,
+      totalRounds: totals.rounds,
+      totalGreen: totals.green,
+      totalRed: totals.red,
+      totalYellow: totals.yellow,
+      totalFalsePositives: totals.falsePositives,
       avgReaction: average(allReactions),
       medianReaction: median(allReactions),
       trimmedReaction: trimmedMean(allReactions, 0.1),
@@ -445,7 +365,7 @@ export default function AdvancedStatsPage({ stats, onBack }) {
       p90Reaction: percentile(allReactions, 90),
       stdDeviation: standardDeviation(allReactions),
       falsePositiveRate:
-        totalRed > 0 ? (totalFalsePositives / totalRed) * 100 : 0,
+        totals.red > 0 ? (totals.falsePositives / totals.red) * 100 : 0,
       avgWithoutOutliers: average(iqrSummary.filteredValues),
       outlierCount: iqrSummary.outliers.length,
       outlierBounds:

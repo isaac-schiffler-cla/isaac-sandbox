@@ -112,21 +112,39 @@ export default function Game({ onSessionComplete }) {
     }
   }
 
+  function handleYellowClick() {
+    clearPending();
+    recordResult({ type: "red", reactionTime: null, falsePositive: true, hadYellow: true });
+    setResultText("Too early! Yellow isn't green 🟡");
+    setPhase("result");
+    timeoutRef.current = setTimeout(advanceRound, 1500);
+  }
+
+  function handleGreenClick(elapsed) {
+    recordResult({
+      type: "green",
+      reactionTime: elapsed,
+      falsePositive: false,
+      hadYellow: hadYellowRef.current,
+    });
+    setResultText(`${elapsed} ms — nice!`);
+  }
+
+  function handleRedClick() {
+    recordResult({
+      type: "red",
+      reactionTime: null,
+      falsePositive: true,
+      hadYellow: hadYellowRef.current,
+    });
+    setResultText("False positive! That was red 🔴");
+  }
+
   /* ---------- click on the color box ---------- */
 
   const handleBoxClick = () => {
     if (phase === "yellow") {
-      // Clicked during yellow → false positive (yellow doesn't count as valid)
-      clearPending();
-      recordResult({
-        type: "red",
-        reactionTime: null,
-        falsePositive: true,
-        hadYellow: true,
-      });
-      setResultText("Too early! Yellow isn't green 🟡");
-      setPhase("result");
-      timeoutRef.current = setTimeout(advanceRound, 1500);
+      handleYellowClick();
       return;
     }
 
@@ -134,23 +152,10 @@ export default function Game({ onSessionComplete }) {
     clearPending();
 
     const elapsed = Math.round(performance.now() - startTimeRef.current);
-
     if (color === "green") {
-      recordResult({
-        type: "green",
-        reactionTime: elapsed,
-        falsePositive: false,
-        hadYellow: hadYellowRef.current,
-      });
-      setResultText(`${elapsed} ms — nice!`);
+      handleGreenClick(elapsed);
     } else {
-      recordResult({
-        type: "red",
-        reactionTime: null,
-        falsePositive: true,
-        hadYellow: hadYellowRef.current,
-      });
-      setResultText("False positive! That was red 🔴");
+      handleRedClick();
     }
 
     setPhase("result");
