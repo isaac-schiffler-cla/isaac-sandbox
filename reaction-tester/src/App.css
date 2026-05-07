@@ -680,6 +680,13 @@
     gap: 0.85rem;
   }
 
+  .game-container {
+    width: 100%;
+    min-height: calc(100vh - 11rem);
+    min-height: calc(100dvh - 11rem);
+    justify-content: center;
+  }
+
   .rules li {
     align-items: flex-start;
     line-height: 1.45;
@@ -697,7 +704,12 @@
   }
 
   .countdown {
-    padding: 2.25rem 0 1.5rem;
+    padding: 0;
+  }
+
+  .game-box {
+    aspect-ratio: 1 / 1;
+    min-height: clamp(250px, 42dvh, 420px);
   }
 
   .box-label {
@@ -835,12 +847,13 @@
   }
 
   .game-box {
-    aspect-ratio: 6 / 5;
+    aspect-ratio: 1 / 1;
+    min-height: clamp(260px, 46dvh, 420px);
     border-radius: 14px;
   }
 
   .countdown {
-    padding: 1.75rem 0 1rem;
+    padding: 0;
   }
 
   .countdown-number {
